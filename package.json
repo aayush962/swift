@@ -13,7 +13,10 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
     "husky": "^0.14.3",
+    "jsonwebtoken": "^7.4.3",
     "mocha": "^3.5.0",
-    "mongoose": "^4.11.7"
+    "mongoose": "^4.11.7",
+    "morgan": "^1.8.2",
+    "viper-logger": "^0.0.1"
   }
 }
