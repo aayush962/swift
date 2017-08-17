@@ -4,9 +4,14 @@
   "main": "server.js",
   "author": "doubleA",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "mocha"
+  },
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
+    "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
   }
 }
