@@ -4,7 +4,7 @@ const config = require('../config');
 mongoose.Promise = global.Promise;
 
 //connect to mongodb
-mongoose.connect(config.DB);
+mongoose.connect(config.TESTDB);
 
 mongoose.connection
   .once('open', () => console.log('Connected to SwiftDB'))

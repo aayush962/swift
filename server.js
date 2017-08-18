@@ -12,7 +12,6 @@ const authenticate = require('./routes/authenticate')(swiftRouter);
 const middleware = require('./routes/middleware')(swiftRouter);
 const apiRoutes = require('./routes/api_routes')(swiftRouter);
 
-
 //connect to mongodb
 mongoose.connect(config.DB);
 

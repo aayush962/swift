@@ -1,4 +1,5 @@
 //these routes need auth
+const swiftMailer = require('../mailers/mail_methods');
 const User = require('../models/user');
 
 module.exports = (swiftRouter) => {
@@ -7,17 +8,26 @@ module.exports = (swiftRouter) => {
   swiftRouter.post('/createUser', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    const new_user = new User({ email: email, password: password});
-    new_user.save()
+    const name = req.body.name;
+    User.findOne({email: email})
       .then((user) => {
-        res.json({success: true, message: 'User created successfully'});
-        //viper.spit();
-        //todo
-        //send verification and welcome email
-      })
-      .catch((err) => {
-        res.json({success: false, message: 'User could not be created.'})
-        //viper.spit();
+        if(user){
+          res.json({success: false, message: 'User with same email already exists'});
+        } else {
+          const new_user = new User({ email: email, password: password});
+          new_user.save()
+            .then((user) => {
+              res.json({success: true, message: 'User created successfully'});
+              //viper.spit();
+              //todo
+              //send verification and welcome email
+              swiftMailer('welcome_user', {});
+            })
+            .catch((err) => {
+              res.json({success: false, message: 'User could not be created.'})
+              //viper.spit();
+            })
+        }
       })
   })
 
