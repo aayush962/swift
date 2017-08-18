@@ -6,7 +6,8 @@ const CompanySchema = new Schema({
   size: String,
   creator: {type: Schema.Types.ObjectId, ref: 'User'},
   members: [{type: Schema.Types.ObjectId, ref: 'User'}],
-  projects: [{type: Schema.Types.ObjectId, ref: 'Project'}]
+  projects: [{type: Schema.Types.ObjectId, ref: 'Project'}],
+  created_at: Date
 });
 
 const Company = mongoose.model('Company', CompanySchema);

@@ -1,5 +1,6 @@
 //these routes need auth
-//const swiftMailer = require('../mailers/mail_methods');
+// const swiftMailer = require('../mailers/mail_methods');
+// const viper = require('viper-logger');
 const User = require('../models/user');
 const Company = require('../models/company');
 const Invite = require('../models/invite');
@@ -11,21 +12,26 @@ module.exports = (swiftRouter) => {
   //invite members to company
   swiftRouter.post('/inviteMembersToCompany', (req, res) => {
     const emails = req.body.emails;
-    const company = req.body.company;
+    const company_id = req.body.company_id;
     emails.map((email) => {
       User.findOne({email:email})
         .then((user) => {
           if(!user){
             const invite = new Invite({email: email, created_at: new Date, isActive: true});
-            invite.save()
+            invite.save();
           } else{
-            user.companies.push(company);
+            Company.findById(company_id)
+              .then((company) => {
+                user.companies.push(company);
+                user.save();
+              });
           }
         })
         .catch((err) => {
           res.send(err);
         });
     });
+    res.json({success: true, message: 'Invites sent'});
   });
 
   //change invite status on invite accept
@@ -63,7 +69,7 @@ module.exports = (swiftRouter) => {
         if(!user){
           res.json({success: false, message: 'User with that email not found.'});
         } else {
-          const new_company = new Company({ name: name, size: size, creator: user});
+          const new_company = new Company({ name: name, size: size, creator: user, created_at: new Date});
           new_company.members.push(user);
           new_company.save()
             .then((company) => {
@@ -90,6 +96,22 @@ module.exports = (swiftRouter) => {
         res.send(err);
       });
   });
+
+  //get all companies for a user by email
+  swiftRouter.get('/getCompaniesForUser', (req, res) => {
+    const email = req.query.email;
+    User.findOne({email: email}).populate('companies')
+      .then((user) => {
+        if(!user){
+          res.json({success: false, message: 'No user found with that email.'})
+        } else {
+          res.json({success: true, companies: user.companies})
+        }
+      })
+      .catch((err) => {
+        res.send(err);
+      });
+  })
 
   //User Routes ----------------------------------------------------------------
 
@@ -125,7 +147,7 @@ module.exports = (swiftRouter) => {
 
   //get a user by email
   swiftRouter.get('/getUserByEmail', (req, res) => {
-    User.findOne({ email: req.params.email })
+    User.findOne({ email: req.query.email })
       .then((user) => {
         res.json(user);
         //viper.spit();

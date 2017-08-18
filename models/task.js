@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const TaskSchema = new Schema({
   name: String,
   project: {type: Schema.Types.ObjectId, ref: 'Project'},
-  assigned_to: {type: Schema.Types.ObjectId, ref: 'User'}
+  assigned_to: {type: Schema.Types.ObjectId, ref: 'User'},
+  due_date: Date
 });
 
 const Task = mongoose.model('Task', TaskSchema);

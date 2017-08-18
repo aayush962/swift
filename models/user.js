@@ -13,8 +13,7 @@ const UserSchema = new Schema({
   admin: Boolean,
   isActive: Boolean,
   companies: [{type: Schema.Types.ObjectId, ref: 'Company'}],
-  tasks_assigned: [{type: Schema.Types.ObjectId, ref: 'Task'}],
-  tasks_created: [{type: Schema.Types.ObjectId, ref: 'Task'}],
+  tasks_assigned: [{type: Schema.Types.ObjectId, ref: 'Task'}]
 });
 
 UserSchema.pre('save', function(next) {
