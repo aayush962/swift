@@ -10,6 +10,7 @@
     "prepush": "mocha"
   },
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
     "husky": "^0.14.3",
