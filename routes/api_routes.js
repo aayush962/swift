@@ -1,15 +1,84 @@
-//these routes need auth
+// these routes need auth
 // const swiftMailer = require('../mailers/mail_methods');
 // const viper = require('viper-logger');
 const User = require('../models/user');
 const Company = require('../models/company');
 const Invite = require('../models/invite');
+const Project = require('../models/project');
 
 module.exports = (swiftRouter) => {
 
+  //Project Routes -------------------------------------------------------------
+
+  //get projects for a company
+  swiftRouter.get('/getProjectsByCompany', (req, res) => {
+    const company_id = req.query.company_id;
+    if(company_id){
+      Company.findById(company_id)
+        .populate('projects')
+        .then((company) => {
+          res.json({success: true, projects: company.projects});
+        })
+        .catch((err) => {
+          res.json({success: false, message: 'Company by that id not found'})
+        });
+    } else{
+      res.json({success: false, message: 'Please provide company id'})
+    }
+  });
+
+  //add members to project
+  // swiftRouter.post('/addMembersToProject', (req, res) => {
+  //
+  // });
+
+
+  //create a new project
+  swiftRouter.post('/createProject', (req, res) => {
+    const title = req.body.title;
+    const company_id = req.body.company_id;
+    const email = req.body.email;
+    User.findOne({email: email})
+      .then((user) => {
+        if(!user){
+          res.json({success: false, message: 'User with given email not found.'})
+        } else{
+          const new_project = new Project({title: title, creator: user})
+
+          new_project.save()
+            .then((project) => {
+              //user.projects.push(project);
+              //user.save();
+              Company.findById(company_id)
+                .then((company) => {
+                  company.projects.push(project);
+                  company.save()
+                  project.company = company;
+                  project.save()
+                    .then((project) => {
+                      res.json({success: true, message: 'Project saved successfully', project: project})
+                    })
+                    .catch((err) => {
+                      res.json({success: false, message: 'Project could not be created.'})
+                    })
+                })
+                .catch((err) => {
+                  res.json({success: false, message: 'Project could not be created.'})
+                })
+            })
+            .catch((err) => {
+                res.json({success: false, message: 'Project could not be created.'})
+            });
+        }
+      })
+      .catch((err) => {
+        res.send(err);
+      });
+  });
+
   //Invite Routes -------------------------------------------------------------
 
-  //invite members to company
+  //invite or add members to company
   swiftRouter.post('/inviteMembersToCompany', (req, res) => {
     const emails = req.body.emails;
     const company_id = req.body.company_id;
@@ -61,7 +130,7 @@ module.exports = (swiftRouter) => {
 
   //create company
   swiftRouter.post('/createCompany', (req, res) => {
-    const name = req.body.email;
+    const name = req.body.name;
     const size = req.body.password;
     const creator_email = req.body.creator_email;
     User.findOne({email: creator_email})
